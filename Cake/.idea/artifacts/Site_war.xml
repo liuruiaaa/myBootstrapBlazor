@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="Site:war">
+    <output-path>$PROJECT_DIR$/Site/target</output-path>
+    <root id="archive" name="cake-site-1.0-SNAPSHOT.war">
+      <element id="artifact" artifact-name="Site:war exploded" />
+    </root>
+  </artifact>
+</component>
