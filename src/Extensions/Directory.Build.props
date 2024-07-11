@@ -1,0 +1,12 @@
+<Project>
+
+  <Import Project="..\Directory.Build.props" />
+  <Import Project="..\Frameworks.props" />
+  <Import Project="..\Logo.props" />
+  <Import Project="..\SourceLink.targets" />
+
+  <PropertyGroup>
+    <RootNamespace>BootstrapBlazor.Components</RootNamespace>
+  </PropertyGroup>
+
+</Project>

@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="bunit" Version="1.28.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.5" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
+    <PackageReference Include="xunit" Version="2.8.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" Version="6.0.2">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Locales\*.json" />
+    <EmbeddedResource Include="Locales\*.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="BootstrapBlazor.Server.Data" />
+    <Using Include="UnitTest.Extensions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\src\BootstrapBlazor.Server\Data\Foo.cs" Link="Misc\Foo.cs" />
+    <Compile Include="..\..\src\BootstrapBlazor.Server\Data\TreeFoo.cs" Link="Misc\TreeFoo.cs" />
+    <Compile Include="..\..\src\BootstrapBlazor.Server\Extensions\IpExtensions.cs" Link="Extensions\IpExtensions.cs" />
+    <Compile Include="..\..\src\BootstrapBlazor\Components\Table\InternalTableColumn.cs" Link="Misc\InternalTableColumn.cs" />
+    <Compile Include="..\..\src\BootstrapBlazor\Extensions\DateTimeExtensions.cs" Link="Extensions\DateTimeExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\BootstrapBlazor\BootstrapBlazor.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Plugins\Test.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="Plugins\Test.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="FooTest.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="zh-CN.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

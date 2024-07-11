@@ -1,0 +1,132 @@
+﻿@inherits AppComponentBase
+
+@page "/Chat"
+
+
+
+<h3>--</h3>
+<div class="scroll-demo border">
+	<Scroll Height="300px" >
+		<div style="height: auto;" id="chatContent"> </div>
+		@foreach (var message in messages)
+		{
+			<div style="@($"text-align: {message.Position};")">@message.Text</div>
+		}
+	</Scroll>
+</div>
+
+<div class="row g-3 buttonn">
+	<div class="col-6 col-sm-6">
+		<BootstrapInput @bind-Value="@messageInputA" PlaceHolder="请输入 ... 获得焦点时全选"
+						TValue="string"
+						IsAutoFocus="true"
+						IsSelectAllTextOnFocus="true"
+						Id="charA"
+						ShowLabel="false" />
+	</div>
+	<div class="col-6 col-sm-4 col-md-3  "><Button OnClick="@ButtonClickA" Color="Color.Primary">左边消息</Button></div>
+</div>
+
+<div class="row g-3 buttonn">
+	<div class="col-6 col-sm-6">
+		<BootstrapInput @bind-Value="@messageInputB" PlaceHolder="请输入 ... 获得焦点时全选"
+						TValue="string"
+						IsAutoFocus="true"
+						IsSelectAllTextOnFocus="true"
+						Id="charB"
+						ShowLabel="false" />
+	</div>
+	<div class="col-6 col-sm-4 col-md-3  "><Button OnClick="@ButtonClickB" Color="Color.Primary">右边消息</Button></div>
+</div>
+<div class="col-6 col-sm-4 col-md-3 col-lg-auto "><Button OnClick="@ButtonClickC" Color="Color.Primary">http发送</Button></div>
+<div class="col-6 col-sm-4 col-md-3 col-lg-auto "><Button OnClick="@ButtonClickD" Color="Color.Primary">动态导航</Button></div>
+<ConsoleLogger @ref="NormalLogger" />
+
+@code {
+
+	[Parameter]
+	public string UserId { get; set; }
+	[Parameter]
+	public string RoomId { get; set; }
+
+	[CascadingParameter]
+	public MainLayout ParentComponent { get; set; }
+
+
+	private string messageInputA;
+	private string messageInputB;
+
+
+	private void ButtonClickD(MouseEventArgs e)
+	{
+		Random random = new Random();
+		int randomNumber = random.Next(0, 1000);
+		MenuService.UpdateMenu(new() { Text = "Chat" + randomNumber, Icon = "fa-solid fa-fw fa-home", Url = $"/Chat2?userId={randomNumber}" });
+		StateHasChanged();
+	}
+
+
+
+
+	private List<ChatMessage> messages = new List<ChatMessage>();
+
+	private void ButtonClickA(MouseEventArgs e)
+	{
+		if (!string.IsNullOrWhiteSpace(messageInputA))
+		{
+			messages.Add(new ChatMessage { Text = messageInputA, Position = "left" });
+			messageInputA = string.Empty;
+			StateHasChanged();
+		}
+	}
+
+	private void ButtonClickB(MouseEventArgs e)
+	{
+		if (!string.IsNullOrWhiteSpace(messageInputB))
+		{
+			messages.Add(new ChatMessage { Text = messageInputB, Position = "right" });
+			messageInputB = string.Empty;
+			StateHasChanged();
+		}
+	}
+}
+
+<HeadContent>
+	<style>
+		.buttonn {
+			margin-top: 20px;
+			display: flex !important;
+			width: 100% !important;
+		}
+
+		.col-md-3 {
+			margin-left: 0px !important;
+			width: auto !important;
+		}
+
+		.message-left {
+			text-align: left;
+		}
+
+		.message-right {
+			text-align: right;
+		}
+
+	</style>
+</HeadContent>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

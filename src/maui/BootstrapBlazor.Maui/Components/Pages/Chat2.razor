@@ -1,0 +1,190 @@
+﻿@inherits AppComponentBase
+
+@page "/Chat2"
+@page "/Chat2/{userId?}"
+@page "/Chat2/{userId?}/{roomId?}"
+@inject IJSRuntime JSRuntime
+
+
+
+
+<h3>--@UserId--@RoomId</h3>
+<div class="scroll-demo border">
+	<div id="scrollContainer" style="height:300px;overflow:auto">
+		<Virtualize Context="message" TItem="ChatMessage" ItemSize="30" ItemsProvider="LoadMessagesAsync" @ref="virtualizeComponent">
+			<ItemContent>
+				  <div style="@($"text-align: {message.Position};")">@message.Text
+						@if (!string.IsNullOrEmpty(message.AudioUrl))
+						{
+							<audio src="@message.AudioUrl" controls>
+								Your browser does not support the audio element.
+							</audio>
+						}
+				  </div>
+			</ItemContent>
+		</Virtualize>
+	</div>
+</div>
+
+<div class="row g-3 buttonn">
+	<div class="col-12 col-sm-6">
+		<BootstrapInput  @bind-Value="@messageInputA"  PlaceHolder="请输入 ... 获得焦点时全选"
+						TValue="string"
+						IsAutoFocus="true"
+						IsSelectAllTextOnFocus="true"
+						Id="charA"
+						ShowLabel="false" />
+	</div>
+	<div class="col-6 col-sm-4 col-md-3 col-lg-auto "><Button OnClick="@ButtonClickA" Color="Color.Primary">左边消息</Button></div>
+</div>
+
+<div class="row g-3 buttonn">
+	<div class="col-12 col-sm-6">
+		<BootstrapInput @bind-Value="@messageInputB" PlaceHolder="请输入 ... 获得焦点时全选"
+						TValue="string"
+						IsAutoFocus="true"
+						IsSelectAllTextOnFocus="true"
+						Id="charB"
+						ShowLabel="false" />
+	</div>
+	<div class="col-6 col-sm-4 col-md-3 col-lg-auto "><Button OnClick="@ButtonClickB" Color="Color.Primary">右边消息</Button></div>
+</div>
+
+
+@code {
+
+	[Parameter]
+	[SupplyParameterFromQuery()]
+	public string UserId { get; set; }
+	[Parameter]
+	[SupplyParameterFromQuery()]
+	public string RoomId { get; set; }
+
+	private List<ChatMessage> Items = new List<ChatMessage>(); // 初始消息列表
+	private string messageInputA, messageInputB;               // 用于保存输入的消息
+
+
+	private Virtualize<ChatMessage> virtualizeComponent= new Virtualize<ChatMessage>();       // 强制刷新用
+
+	//页面加载的时候会用到
+	protected override async Task OnParametersSetAsync()
+	{
+		// 每次参数变化时调用，重新加载数据
+		if (!string.IsNullOrEmpty(UserId))
+		{
+			Items = new List<ChatMessage>();
+			IEnumerable<ChatMessage> itemss;
+			itemss = ChatMessage.GenerateMessagesInRange(0, 30); //去数据库拿数据
+			Items.InsertRange(0, itemss); //写入到最前面  Items.AddRange(itemss);
+			System.Diagnostics.Debug.WriteLine($"=============》request start 0 ,end 30");
+			var totalCount = GetTotalMessageCount();
+			rushDemo(true);
+		}
+	}
+
+	private async  void ButtonClickA(MouseEventArgs e)
+	{
+		if (!string.IsNullOrWhiteSpace(messageInputA))
+		{
+			Items.Add(new ChatMessage { Text = messageInputA, Position = "left" });
+			messageInputA = string.Empty;
+			rushDemo(false);
+		}
+	}
+
+	private async void ButtonClickB(MouseEventArgs e)
+	{
+		if (!string.IsNullOrWhiteSpace(messageInputB))
+		{
+			Items.Add(new ChatMessage { Text = messageInputB, Position = "right" });
+			messageInputB = string.Empty;
+			rushDemo(false);
+		}
+	}
+
+	/*刷新页面*/
+	private async void rushDemo(Boolean isRushNew)
+	{
+		if (isRushNew)
+		{
+			StateHasChanged(); //重新渲染   
+		}
+		else
+		{
+			await virtualizeComponent.RefreshDataAsync(); // 强制刷新数据   
+			StateHasChanged(); //重新渲染
+		}
+		await JSRuntime.InvokeVoidAsync("scrollToBottom", "scrollContainer"); // JavaScript函数调用，参数是div的ID
+	}
+
+
+	// 发送消息的逻辑和样式代码与原始问题保持不变
+	private async ValueTask<ItemsProviderResult<ChatMessage>> LoadMessagesAsync(ItemsProviderRequest request)
+	{
+		// 模拟延迟
+		await Task.Delay(200);
+		// 计算要加载的消息的起始索引和结束索引
+		var start = request.StartIndex;
+		var end = start + request.Count;
+
+		IEnumerable<ChatMessage> itemss;
+
+		//到一定程度就不再加载数据了
+		if (start > 0 || GetTotalMessageCount() > 100) 
+		{
+			itemss = Items.Skip(start).Take(end).ToList();//从缓存中去拿数据
+		}else{
+			itemss = ChatMessage.GenerateMessagesInRange(start, end); //去数据库拿数据
+			Items.InsertRange(0, itemss); //写入到最前面  Items.AddRange(itemss);
+		}
+		System.Diagnostics.Debug.WriteLine($"=============》request start{start},end{end}");
+		var totalCount = GetTotalMessageCount();
+		return new ItemsProviderResult<ChatMessage>(itemss, totalCount);
+	}
+
+
+	// 同样你需要实现此方法来获取消息总数，可能需要从数据库或服务端API获取
+	private int GetTotalMessageCount()
+	{
+		//Items 是存储所有消息的集合
+		return Items.Count;
+	}
+
+}
+
+<HeadContent>
+	<style>
+	.buttonn {
+		margin-top:20px;
+		display: flex !important;
+		width: 100% !important;
+		}
+
+		.col-md-3 {
+		margin-left:0px !important;
+		width: auto !important;
+		}
+
+		.message-left {
+			text-align: left;
+		}
+
+		.message-right {
+			text-align: right;
+		}
+		.table-virtualize-chat .table tbody tr td {
+			border: none;
+		}
+	</style>
+</HeadContent>
+
+
+
+
+
+
+
+
+
+
+

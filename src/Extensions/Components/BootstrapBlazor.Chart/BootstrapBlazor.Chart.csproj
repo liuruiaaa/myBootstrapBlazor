@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <Version>8.1.5</Version>
+    <PackageTags>Bootstrap Blazor WebAssembly wasm UI Components Chart</PackageTags>
+    <Description>Bootstrap UI components extensions of Chart.js</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="Locales\*.json" />
+    <EmbeddedResource Include="Locales\*.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BootstrapBlazor" Version="8.6.6.12" />
+  </ItemGroup>
+
+</Project>
